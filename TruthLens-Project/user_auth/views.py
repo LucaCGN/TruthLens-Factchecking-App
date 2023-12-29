@@ -2,6 +2,8 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from firebase_admin import auth
+from .models import CustomUser
+from firebase_integration.firestore_client import create_user_document
 
 def sign_in(request):
     """
@@ -17,10 +19,15 @@ def verify_token(request):
     if request.method == 'POST':
         token = request.POST.get('token')
         try:
-            # Verify the Firebase ID token
             decoded_token = auth.verify_id_token(token)
             uid = decoded_token['uid']
-            # Perform additional user checks or create a user session here
+            
+            # Create or update user in Django's auth system
+            user, created = CustomUser.objects.get_or_create(firebase_uid=uid)
+
+            # Create a new document in Firestore for the user
+            if created:
+                create_user_document(uid)
 
             return JsonResponse({'status': 'success', 'uid': uid})
         except auth.InvalidIdTokenError:

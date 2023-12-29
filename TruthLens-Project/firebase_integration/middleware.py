@@ -1,6 +1,6 @@
 from firebase_admin import auth, exceptions
-from django.contrib.auth.models import User
 from django.http import JsonResponse
+from user_auth.models import CustomUser  # Ensure this import points to your CustomUser model
 
 class FirebaseAuthenticationMiddleware:
     def __init__(self, get_response):
@@ -17,7 +17,7 @@ class FirebaseAuthenticationMiddleware:
                 decoded_token = auth.verify_id_token(id_token)
                 # Get or create a user from the decoded token
                 uid = decoded_token['uid']
-                user, created = User.objects.get_or_create(username=uid)
+                user, created = CustomUser.objects.get_or_create(firebase_uid=uid)
                 # Attach the user to the current request
                 request.user = user
             except auth.InvalidIdTokenError:

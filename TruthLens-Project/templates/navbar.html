@@ -1,5 +1,12 @@
 <!-- Navbar -->
-<nav class="bg-gray-800 p-4 text-white" x-data="{ open: false }">
+<nav class="bg-gray-800 p-4 text-white" x-data="{ open: false, authenticated: false }">
+    <!-- Alpine.js to handle dynamic content -->
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.store('auth', { authenticated: false });
+        });
+    </script>
+
     <div class="container mx-auto flex items-center justify-between flex-wrap">
         <!-- Logo or Branding -->
         <div class="flex items-center flex-shrink-0 text-white mr-6">
@@ -10,26 +17,23 @@
         <div class="w-full block flex-grow lg:flex lg:items-center lg:w-auto">
             <div class="text-sm lg:flex-grow">
                 <!-- Document List -->
-                <a href="#responsive-header" class="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
-                    Factchecking Record
+                <a href="/home" class="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
+                    Home
                 </a>
-                <!-- ... other document list items ... -->
-
-                <!-- Navigation Links -->
-                <a href="#responsive-header" class="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
-                    Docs and FAQ
+                <a href="/docs-faq" class="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
+                    FAQ & Terms of Service
                 </a>
-                <a href="#responsive-header" class="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white">
-                    Terms of Service
+                <a href="/manage-account" class="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white" x-bind:class="{ 'hidden': !Alpine.store('auth').authenticated }">
+                    Manage Account and Plan
                 </a>
-                <!-- ... other navigation links ... -->
             </div>
+
             <!-- Sign in/out Section -->
             <div>
-                <a href="/sign-in" class="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-teal-500 hover:bg-white mt-4 lg:mt-0" x-show="!open" @click="open = !open">
+                <a href="/sign-in" class="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-teal-500 hover:bg-white mt-4 lg:mt-0" x-show="!Alpine.store('auth').authenticated">
                     Sign In
                 </a>
-                <a href="/sign-out" class="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-teal-500 hover:bg-white mt-4 lg:mt-0" x-show="open" @click="open = !open">
+                <a href="/sign-out" class="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-teal-500 hover:bg-white mt-4 lg:mt-0" x-show="Alpine.store('auth').authenticated">
                     Sign Out
                 </a>
             </div>
